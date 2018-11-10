@@ -28,7 +28,7 @@ pause(15);
 set_param(gcs,'SimulationCommand','stop');
 
 %% Signal generation and reading
-t = 0:0.00000666666:3; % Seconds
+t = 0:0.00000666666:1; % Seconds
 outputSignal1 = chirp(t,50,1,15000)';
 outputSignal2 = -chirp(t,50,1,15000)';
 zeroData = zeros(15000,1);
