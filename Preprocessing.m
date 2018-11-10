@@ -14,9 +14,9 @@ hold off;
 
 % I think we need to swap columns 1 and 2 of all the data.savedData or specify column 2 somehow;
 % fft may be operating on first column - MR
-Y=fft(data(2).savedData) 
+Y=fft(data(2).savedData(:,2)) 
 L=40001
-Fs=400
+Fs=40000
 
 P2 = abs(Y/L);
 P1 = P2(1:L/2+1);

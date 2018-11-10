@@ -1,0 +1,19 @@
+Preliminary Processing:
+import data
+trim data
+align signals as needed
+remove spikes as needed
+average over trials
+smooth
+
+Intermediate Deliverables:
+Histogram of chirp
+Some plot to display room reflections
+What do windowing function look like (graphically)
+Calculate speed of sound and all gain stages to predict data collected
+67 deg. F for test.
+
+Final deliverables:
+Sensitivity vs freq plot
+Sensitivity vs freq vs theta surface
+Compare w/ manufacturer data & calculate error
