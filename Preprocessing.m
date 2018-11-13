@@ -4,33 +4,49 @@ clc
 clear variables
 
 pwd;
+
 'Loading Workspaces'
 %% Load both reference and experimental workspaces from ProjectData folder
 %% Add parts to exp struct for preprocessing
-% ref(1) = load('..\Data\Project Data\reference_1_workspace.mat',...
-%     'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerTime');
-% ref(2) = load('..\Data\Project Data\reference_2_workspace.mat',...
-%     'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerTime');
-exp(1) = load('..\Data\Project Data\run_1_workspace.mat',...
-    'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerArray');
+for i = 4:-1:1
+ref(i) = load(strcat('..\Data\Project Data\reference_',num2str(i),'_workspace.mat'),...
+    'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerTime');
+end;
+
+for i = 4:-1:1
+exp(i) = load(strcat('..\Data\Project Data\run_',num2str(i),'_workspace.mat'),...
+    'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerTime');
+end;
+
 exp(1).delayTimes(38) = 0;
-for angle = 1:38
-    % adjustedData will be a struct for each angle with a 2D array inside it
-    exp(1).adjusted(angle).data(:,1:2) = exp.savedData(:,1:2,angle); 
+ref(1).delayTimes(4) = 0;
+for i = 1:4
+    for angle = 1:38
+        % adjustedData will be a struct for each angle with a 2D array inside it
+        exp(i).adjusted(angle).data(:,1:2) = exp(i).savedData(:,1:2,angle); 
+    end
 end
 
-%% Define number of reference workspaces and experimental workspaces for loops
-numReferences = 0;
-numExperimentals = 1;
+for i = 1:4
+    % adjustedData will be a struct for each angle with a 2D array inside it
+    ref(i).adjusted.data(:,1:2) = ref(i).savedData(:,1:2,1); 
+end
 
 'Aligning Data'
 %% Align data by finding minimum delay between first and any other angle
 %% and trimming off the excess data at the beginning. (for each run)
-for run = 1:numExperimentals
-    exp(run) = align_and_trim(exp(run));
-end
+[ref,minIndexRef] = align_and_trim_ref(ref);
+[exp,minDelayTimeExpFinal,minRunExpFinal,minAngleExpFinal] = align_and_trim_exp(exp);
 
-'Removing Spikes'
+% %% Construct min
+% min.minIndexRef = minIndexRef;
+% min.minDelayTimeExpFinal = minDelayTimeExpFinal;
+% min.minRunExpFinal = minRunExpFinal;
+% min.minAngleExpFinal = minAngleExpFinal;
+
+% [ref,exp] = align_all(ref,exp,min);
+
+% 'Removing Spikes'
 
 %% Define Fourier Parameters
 % L = 40001;
