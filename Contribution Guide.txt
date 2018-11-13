@@ -1,7 +1,7 @@
 Preliminary Processing:
-import data
-trim data
-align signals as needed
+import data - DONE
+trim data - DONE
+align signals as needed - DONE
 remove spikes as needed
 average over trials
 smooth
