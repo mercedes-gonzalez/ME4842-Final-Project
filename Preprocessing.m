@@ -1,10 +1,14 @@
 clc
 clear variables
-pwd
-data(1) = load('..\Data\Project Data\reference_1_workspace.mat',...
+for i = 4:-1:1
+ref(i) = load(strcat('Data\Project Data\reference_',num2str(i),'_workspace.mat'),...
     'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerTime');
-data(2) = load('..\Data\Project Data\reference_2_workspace.mat',...
+end;
+
+for i = 4:-1:1
+exp(i) = load(strcat('Data\Project Data\run_',num2str(i),'_workspace.mat'),...
     'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerTime');
+end;
 
 %%
 plot(data(1).savedData)
