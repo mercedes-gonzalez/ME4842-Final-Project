@@ -20,33 +20,20 @@ end;
 
 exp(1).delayTimes(38) = 0;
 ref(1).delayTimes(4) = 0;
+
 for i = 1:4
+% adjustedData will be a struct for each angle with a 2D array inside it
+% formatted as (time,data)
+    ref(i).adjusted.data(:,1:2) = ref(i).savedData(:,1:2,1); 
     for angle = 1:38
-        % adjustedData will be a struct for each angle with a 2D array inside it
         exp(i).adjusted(angle).data(:,1:2) = exp(i).savedData(:,1:2,angle); 
     end
 end
 
-for i = 1:4
-    % adjustedData will be a struct for each angle with a 2D array inside it
-    ref(i).adjusted.data(:,1:2) = ref(i).savedData(:,1:2,1); 
-end
-
 'Aligning Data'
-%% Align data by finding minimum delay between first and any other angle
-%% and trimming off the excess data at the beginning. (for each run)
-[ref,minIndexRef] = align_and_trim_ref(ref);
-[exp,minDelayTimeExpFinal,minRunExpFinal,minAngleExpFinal] = align_and_trim_exp(exp);
+[ref,exp] = align_data(ref, exp);
 
-% %% Construct min
-% min.minIndexRef = minIndexRef;
-% min.minDelayTimeExpFinal = minDelayTimeExpFinal;
-% min.minRunExpFinal = minRunExpFinal;
-% min.minAngleExpFinal = minAngleExpFinal;
-
-% [ref,exp] = align_all(ref,exp,min);
-
-% 'Removing Spikes'
+'Removing Spikes'
 
 %% Define Fourier Parameters
 % L = 40001;

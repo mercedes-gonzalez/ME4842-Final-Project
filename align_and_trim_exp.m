@@ -15,20 +15,24 @@ function [exp,minDelayTimeExpFinal,minRunExpFinal,minAngleExpFinal] = align_and_
     end
     [minDelayTimeExpFinal,minRunExpFinal] = min(minDelayTimeperRun)
     minAngleExpFinal = min(angleofMinDelayperRun)
+    figure(1)
     for i = 1:4
         for angle = 1:38
             delayTime = exp(i).delayTimes(angle)/150000; % seconds
             offsetTime = delayTime - (minDelayTimeExpFinal/150000);
-            exp(i).adjusted(angle).data(:,1) = exp(i).adjusted(angle).data(:,1) - offsetTime;                
+            exp(i).adjusted(angle).data(:,1) = exp(i).adjusted(angle).data(:,1) + offsetTime;       
+            plot(exp(i).adjusted(angle).data(:,1),exp(i).adjusted(angle).data(:,2))
+            hold on;
+            plot(exp(i).savedData(:,1,angle),exp(i).savedData(:,2,angle));
+            xlim([0 .1])
         end
     end
-%     i = 2;
-%     angle = 29;
-%     plot(exp(i).adjusted(angle).data(:,1),exp(i).adjusted(angle).data(:,2),'r')
-%     hold on
-%     plot(exp(i).adjusted(2).data(:,1),exp(i).adjusted(2).data(:,2),'b')
-
-%     scatter(exp(i).savedData(:,1,angle),exp(i).savedData(:,2,angle),'b','.');
-%     title('angle 29');
-
+    figure(2)
+    for i = 1:4
+        for angle = 1:38
+            plot(exp(i).savedData(:,1,angle),exp(i).savedData(:,2,angle));
+            hold on
+            xlim([0 .1])
+        end
+    end
 end

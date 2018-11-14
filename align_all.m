@@ -20,11 +20,8 @@ masterDelayTime = finddelay(ref(minIndexRef).adjusted(1).data(:,2),exp(minRunExp
         for angle = 1:38
             delayTime = exp(i).delayTimes(angle)/150000; % seconds
             offsetTime = delayTime - (masterDelayTime/150000);
-            exp(i).adjusted(angle).data(:,1) = exp(i).adjusted(angle).data(:,1) - offsetTime;                
+            exp(i).adjusted(angle).data(:,1) = exp(i).adjusted(angle).data(:,1) + offsetTime;                
         end
     end
 
-%     plot(exp(3).adjusted(9).data(:,1),exp(3).adjusted(9).data(:,2),'r');
-%     hold on;
-%     plot(exp(3).adjusted(29).data(:,1),exp(3).adjusted(29).data(:,2),'b');
 end

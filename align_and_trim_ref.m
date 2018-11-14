@@ -14,19 +14,20 @@ function [ref,minIndexRef] = align_and_trim_ref(ref)
     end
     [minDelayRef, minIndexRef] = min(ref(1).delayTimes)
 
+    figure(1)
     for i = 1:4
         delayTime = ref(1).delayTimes(i)/150000; % seconds
         offsetTime = delayTime - (minDelayRef/150000);
-        ref(i).adjusted(1).data(:,1) = ref(i).adjusted(1).data(:,1) - offsetTime;                
+        ref(i).adjusted(1).data(:,1) = ref(i).adjusted(1).data(:,1) + offsetTime;                
+        plot(ref(i).adjusted(1).data(:,1),ref(i).adjusted(1).data(:,2));
+        xlim([0 .1]);
+        hold on;
     end
-%     figure
-%     plot(ref(minIndexRef).adjusted(1).data(:,1),ref(minIndexRef).adjusted(1).data(:,2),'r');
-%     hold on
-%     plot(ref(minIndexRef).savedData(:,1,1),ref(minIndexRef).savedData(:,2,1),'b');
-%     plot(ref(1).adjusted(1).data(:,1),ref(1).adjusted(1).data(:,2));
-%     plot(ref(1).savedData(:,1,1),ref(1).savedData(:,2,1),'k');
-% 
-%     legend('Reference Adjusted','Saved Adjusted','Adjusted 1','Saved 1');
-%     xlim([0 1]);
+    figure(2)
+        for i = 1:4              
+        plot(ref(i).savedData(:,1,1),ref(i).savedData(:,2,1));
+        xlim([0 .1]);
+        hold on;
+    end
 
 end
