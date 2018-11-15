@@ -37,9 +37,9 @@ s_t = vertcat(s_t,ones(112143,1));
 
     hold on;
 
-L=length(exp(i).H_f(1,:,angle));        
-NFFT=262144;       
-X=fft(exp(i).H_f(1,:,angle),NFFT);       
+L=length(exp(i).adjusted(angle).data(1:50,2));        
+NFFT=100;       
+X=fft(exp(i).adjusted(angle).data(1:500,2));       
 Px=X.*conj(X)/(NFFT*L); %Power of each freq components       
 fVals=150000*(0:NFFT/2-1)/NFFT;      
 plot(fVals,Px(1:NFFT/2),'b','LineWidth',1);         
