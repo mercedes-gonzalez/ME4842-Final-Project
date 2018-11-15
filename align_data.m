@@ -40,7 +40,6 @@ function [ref,exp] = align_data(ref,exp)
         minDelayFinal = minDelayExp;
     end
     
-%     zeroData(abs(minDelayFinal
     %% Align references
     figure(1)
     for i = 1:4
@@ -78,7 +77,6 @@ function [ref,exp] = align_data(ref,exp)
             zeroData(:,1) = linspace(lastTime+timeStep,endTime,22144);
             zeroData(:,2) = 0;
             exp(i).adjusted(angle).data = vertcat(zeroData,exp(i).adjusted(angle).data);
-
             plot(exp(i).adjusted(angle).data(:,1),exp(i).adjusted(angle).data(:,2))
             hold on;
             title('Experimental Aligned');
@@ -93,5 +91,17 @@ function [ref,exp] = align_data(ref,exp)
             title('Experimental Saved');
         end
     end
+    minDelayTime = abs(minDelayFinal/150000);
 
+    figure(5)
+    for i = 1:4
+        ref(i).adjusted(1).data(:,1) = ref(i).adjusted(1).data(:,1) - minDelayTime;
+%         plot(ref(i).adjusted(angle).data(:,1),ref(i).adjusted(angle).data(:,2))
+        for angle = 1:38
+            exp(i).adjusted(1).data(:,1) = exp(i).adjusted(1).data(:,1) - minDelayTime;
+            plot(exp(i).adjusted(angle).data(:,1),exp(i).adjusted(angle).data(:,2))
+            hold on
+        end
+    end
+    
 end

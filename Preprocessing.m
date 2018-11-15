@@ -33,8 +33,6 @@ end
 'Aligning Data'
 [ref,exp] = align_data(ref, exp);
 
-'Removing Spikes'
-
 %% Define Fourier Parameters
 % L = 40001;
 % Fs = 40000;
