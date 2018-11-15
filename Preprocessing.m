@@ -48,3 +48,46 @@ plot(f,P1)
 title('Single-Sided Amplitude Spectrum of X(t)')
 xlabel('f (Hz)')
 ylabel('|P1(f)|')
+
+%%
+%Making the window
+
+
+
+n = 8191; % order
+dp = 0.00001; %deviation from passband	
+ds = 0.00005; %deviation from stopband
+wt = 17000/(f_samp/2);
+h2 = fircls1(n,f_max_n,dp,ds,wt);
+fvtool(h2,1)
+
+for i = 4:-1:1
+ref(i) = load(strcat('Data\Project Data\reference_',num2str(i),'_workspace.mat'),...
+    'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerTime');
+end;
+
+% xzp = vertcat(ref(1).savedData,zeros(22144, 2));
+% hzp = [h zeros(1,253951)];
+
+y = xzp .* hzp;
+
+y = ifft(y);
+relrmserr = norm(imag(y))/norm(y) % check... should be zero
+y = real(y);
+
+plot(xzp)
+hold on;
+plot(hzp)
+
+
+
+ L=262144;
+ N=18;
+ fy=fft(hzp,2^N)/(L/2);
+ f=(150000/2^N)*(0:2^(N-1)-1);
+ figure, plot(f,abs(fy(1:2^(N-1))));
+
+hold off;
+plot(fft(xzp))
+hold on;
+plot (fft(hzp))
