@@ -4,7 +4,6 @@ trim data - DONE
 align signals as needed - DONE
 remove spikes as needed
 average over trials
-smooth
 
 Intermediate Deliverables:
 Histogram of chirp

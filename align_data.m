@@ -5,12 +5,15 @@ function [ref,exp] = align_data(ref,exp)
         %% Trim savedData to 0 --> 1.5 seconds lol
         ref(run).savedData(240001:end,:,:) = [];
         ref(run).time(240001:end,:) = [];
-        ref(run).outputSignal1(240001:end,:) = [];        
+        ref(run).outputSignal1(240001:end,:) = [];  
+        ref(run).adjusted.data(240001:end,:) = [];
         exp(run).savedData(240001:end,:,:) = [];
         exp(run).time(240001:end,:) = [];
         exp(run).outputSignal1(240001:end,:) = [];
+        for angle = 1:38
+            exp(run).adjusted(angle).data(240001:end,:) = [];
+        end
     end
-    
     %% Create array to compare all delays in experimental runs
     compareDelayTimesArray = ones(38,4);
     
@@ -37,46 +40,56 @@ function [ref,exp] = align_data(ref,exp)
         minDelayFinal = minDelayExp;
     end
     
+%     zeroData(abs(minDelayFinal
     %% Align references
     figure(1)
     for i = 1:4
         delayTime = ref(1).delayTimes(i)/150000; % seconds
         offsetTime = delayTime - (minDelayFinal/150000);
-        ref(i).adjusted(1).data(:,1) = ref(i).adjusted(1).data(:,1) + offsetTime;                
+        ref(i).adjusted(1).data(:,1) = ref(i).adjusted(1).data(:,1) + offsetTime;   
+        lastTime = ref(i).adjusted(1).data(end,1);
+        timeStep = 1/150000;
+        endTime = lastTime + 22144/150000;
+        zeroData(:,1) = linspace(lastTime+timeStep,endTime,22144);
+        zeroData(:,2) = 0;
+        ref(i).adjusted(1).data = vertcat(zeroData,ref(i).adjusted(1).data);
+
         plot(ref(i).adjusted(1).data(:,1),ref(i).adjusted(1).data(:,2));
-        xlim([0 .1]);
         title('Reference Aligned');
         hold on;
     end
-%     figure(2)
+    figure(2)
     for i = 1:4              
         plot(ref(i).savedData(:,1,1),ref(i).savedData(:,2,1));
-        xlim([0 .1]);
         title('Reference Saved');
         hold on;
     end
     
     %% Align Experimentals
-%     figure(3)
+    figure(3)
     for i = 1:4
         for angle = 1:38
             delayTime = exp(i).delayTimes(angle)/150000; % seconds
             offsetTime = delayTime - (minDelayFinal/150000);
-            exp(i).adjusted(angle).data(:,1) = exp(i).adjusted(angle).data(:,1) + offsetTime;       
+            exp(i).adjusted(angle).data(:,1) = exp(i).adjusted(angle).data(:,1) + offsetTime;  
+            lastTime = exp(i).adjusted(angle).data(end,1);
+            timeStep = 1/150000;
+            endTime = lastTime + 22144/150000;
+            zeroData(:,1) = linspace(lastTime+timeStep,endTime,22144);
+            zeroData(:,2) = 0;
+            exp(i).adjusted(angle).data = vertcat(zeroData,exp(i).adjusted(angle).data);
+
             plot(exp(i).adjusted(angle).data(:,1),exp(i).adjusted(angle).data(:,2))
             hold on;
-            plot(exp(i).adjusted(angle).data(:,1),exp(i).adjusted(angle).data(:,2));
-            xlim([0 .1]);
             title('Experimental Aligned');
         end
     end
     
-%     figure(4)
+    figure(4)
     for i = 1:4
         for angle = 1:38
             plot(exp(i).savedData(:,1,angle),exp(i).savedData(:,2,angle));
             hold on
-            xlim([0 .1])
             title('Experimental Saved');
         end
     end
