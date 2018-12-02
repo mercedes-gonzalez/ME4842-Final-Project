@@ -2,12 +2,12 @@
 %% Initialize Program, clear all 
 clc
 clear variables
-
+tic
 pwd;
 
-'Loading Workspaces'
-%% Load both reference and experimental workspaces from ProjectData folder
-%% Add parts to exp struct for preprocessing
+%% Loading Workspaces
+% Load both reference and experimental workspaces from ProjectData folder
+% Add parts to exp struct for preprocessing
 for i = 4:-1:1
 ref(i) = load(strcat('..\Data\Project Data\reference_',num2str(i),'_workspace.mat'),...
     'measuredTheta', 'outputSignal1', 'savedData', 'time', 'triggerTime');
@@ -30,9 +30,34 @@ for i = 1:4
     end
 end
 
-'Aligning Data'
+
+'Apply low pass filters'
+for run = 1:4
+    disp('run')
+    disp(run)
+    ref(run).adjusted(1).data(:,2) = lowpass(ref(run).adjusted(1).data(:,2),15500,150000);
+    ref(run).adjusted(1).data(:,2) = highpass(ref(run).adjusted(1).data(:,2),400,150000);
+    for angle = 1:38
+        disp('experimental')
+        disp(angle)
+        exp(run).adjusted(angle).data(:,2) = lowpass(exp(run).adjusted(angle).data(:,2),15500,150000);
+        exp(run).adjusted(angle).data(:,2) = highpass(exp(run).adjusted(angle).data(:,2),400,150000);
+
+%         plot(exp(run).adjusted(angle).data(:,1),exp(run).adjusted(angle).data(:,2));
+%         xlim([0 .1]);
+%         pause
+    end
+end
+
+
+'Align Data'
+%% Aligning Data
 [ref,exp] = align_data(ref, exp);
 
+%% Plot
+'Plot things'
+plot_things(ref,exp)
+toc
 %% Define Fourier Parameters
 % L = 40001;
 % Fs = 40000;
