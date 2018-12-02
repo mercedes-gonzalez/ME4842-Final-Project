@@ -15,7 +15,6 @@ function [ref,exp] = align_data(ref,exp)
     
     %% Create array to compare all delays in experimental runs
     compareDelayTimesArray = ones(38,4);
-    
     %% Calculate the delay between the first reference signal and every
     %% other signal, including each angle from each experimental
     for run = 1:1 %4 
@@ -70,9 +69,20 @@ function [ref,exp] = align_data(ref,exp)
     minDelayTime = abs(minDelayFinal/150000);
 
     for run = 1:1
+        plot(ref(run).adjusted(1).data(:,1),ref(run).adjusted(1).data(:,2),'r');
+        hold on
+
+        startIndex = min(find(ref(run).adjusted(1).data(:,2) > 1));
         ref(run).adjusted(1).data(:,1) = ref(run).adjusted(1).data(:,1) - minDelayTime;
+        startTimeOffset = startIndex/150000;
+        ref(run).adjusted(1).data(:,1) = ref(run).adjusted(1).data(:,1) - startTimeOffset;
+        plot(ref(run).adjusted(1).data(:,1),ref(run).adjusted(1).data(:,2),'b');
+        pause 
+        
         for angle = 1:38
             exp(run).adjusted(1).data(:,1) = exp(run).adjusted(1).data(:,1) - minDelayTime;
+            plot(exp(run).adjusted(angle).data(:,1),exp(run).adjusted(angle).data(:,2));
+            hold on;
         end
     end
     

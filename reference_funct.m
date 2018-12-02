@@ -1,8 +1,9 @@
 
 fourierData = fft(data);
-L = length(data);
+fData = fourierData(1:131072,:);
+L = length(fData);
 Fs = 150000;
-P2 = abs(fourierData/L);
+P2 = abs(fData/L);
 P1 = P2(1:L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);
 f = Fs*(0:(L/2))/L;
