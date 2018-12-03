@@ -35,9 +35,10 @@ function [ref, exp] = Processing(ref, exp)
 
 %% Spectrogram Method
 for i = 2:38
-    [s,f,t,p] = spectrogram(exp(1).adjusted(1).data(:,2),tukeywin(1024,0.1),60,1024,150000);
+    % spectrogram(data, 
+    [s,f,t,p] = spectrogram(exp(1).savedData(:,2,1),tukeywin(256,0.1),60,256,150000);
     [q,nd] = max(10*log10(p));
-%     plot3(t,f(nd),p);
+    plot3(t,f(nd),p);
     xlabel('time')
     ylabel('frequency')
     zlabel('power')
@@ -58,9 +59,12 @@ yreg = [ y1 y2 ];
 C = polyfit(xreg,yreg,1);
 timeReg = linspace(0,1.6,1000);
 freqReg = polyval(C,timeReg);
-plot(timeReg,freqReg,'linewidth',4);
-pIndex = logical(f == freqReg);
-powerReg = p(pIndex)
-plot3(timeReg(pIndex),freqReg(pIndex),powerReg(pIndex));
+plot(timeReg,freqReg,'k','linewidth',4);
+f = f';
+[timeGrid,frequencyGrid] = ndgrid(t,f);
+p = p';
+pInterp = griddedInterpolant(timeGrid,frequencyGrid,p);
+powerReg = pInterp(timeReg,freqReg);
+plot3(timeReg,freqReg,powerReg,'k','linewidth',4);
 
 end
