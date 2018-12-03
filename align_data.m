@@ -1,14 +1,14 @@
 function [ref,exp] = align_data(ref,exp)
     'Reference Alignment'
     %% Trim data
-    for run = 1:1
+    for run = 1:4
         %% Trim savedData to 0 --> 1.5 seconds lol
         ref(run).savedData(240001:end,:,:) = [];
         ref(run).outputSignal1(240001:end,:) = [];  
         ref(run).adjusted.data(240001:end,:) = [];
         exp(run).savedData(240001:end,:,:) = [];
         exp(run).outputSignal1(240001:end,:) = [];
-        for angle = 1:38
+        for angle = 2:38
             exp(run).adjusted(angle).data(240001:end,:) = [];
         end
     end
@@ -17,10 +17,10 @@ function [ref,exp] = align_data(ref,exp)
     compareDelayTimesArray = ones(38,4);
     %% Calculate the delay between the first reference signal and every
     %% other signal, including each angle from each experimental
-    for run = 1:1 %4 
+    for run = 1:4
         % Delay times for references will be stored in ref(1).delayTimes
         ref(1).delayTimes(run) = finddelay(ref(run).savedData(:,2,1),ref(1).savedData(:,2,1));
-        for angle = 1:38
+        for angle = 2:38
             exp(run).delayTimes(angle) = finddelay(exp(run).savedData(:,2,angle),ref(1).savedData(:,2,1));
             compareDelayTimesArray(angle,run) = exp(run).delayTimes(angle);
         end
@@ -39,7 +39,7 @@ function [ref,exp] = align_data(ref,exp)
     end
     
     %% Align references
-    for run = 1:1
+    for run = 1:4
         delayTime = ref(1).delayTimes(run)/150000; % seconds
         offsetTime = delayTime - (minDelayFinal/150000);
         ref(run).adjusted(1).data(:,1) = ref(run).adjusted(1).data(:,1) + offsetTime;   
@@ -52,8 +52,8 @@ function [ref,exp] = align_data(ref,exp)
     end
     
     %% Align Experimentals
-    for run = 1:1
-        for angle = 1:38
+    for run = 1:4
+        for angle = 2:38
             delayTime = exp(run).delayTimes(angle)/150000; % seconds
             offsetTime = delayTime - (minDelayFinal/150000);
             exp(run).adjusted(angle).data(:,1) = exp(run).adjusted(angle).data(:,1) + offsetTime;  
@@ -68,21 +68,10 @@ function [ref,exp] = align_data(ref,exp)
     
     minDelayTime = abs(minDelayFinal/150000);
 
-    for run = 1:1
-        plot(ref(run).adjusted(1).data(:,1),ref(run).adjusted(1).data(:,2),'r');
-        hold on
-
-        startIndex = min(find(ref(run).adjusted(1).data(:,2) > 1));
+    for run = 1:4
         ref(run).adjusted(1).data(:,1) = ref(run).adjusted(1).data(:,1) - minDelayTime;
-        startTimeOffset = startIndex/150000;
-        ref(run).adjusted(1).data(:,1) = ref(run).adjusted(1).data(:,1) - startTimeOffset;
-        plot(ref(run).adjusted(1).data(:,1),ref(run).adjusted(1).data(:,2),'b');
-        pause 
-        
-        for angle = 1:38
+        for angle = 2:38
             exp(run).adjusted(1).data(:,1) = exp(run).adjusted(1).data(:,1) - minDelayTime;
-            plot(exp(run).adjusted(angle).data(:,1),exp(run).adjusted(angle).data(:,2));
-            hold on;
         end
     end
     
