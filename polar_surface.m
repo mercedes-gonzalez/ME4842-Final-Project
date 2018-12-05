@@ -20,7 +20,8 @@ FR = flip(FR,1);
 FR = flip(FR,2);
 TH = flip(TH,1);
 Z = flip(Z,2);
-freqInterp = griddedInterpolant(TH,Z,FR,'spline');
+
+freqInterp = griddedInterpolant(TH,Z,FR);
 R = freqInterp(TH,Z);
 
 [x,y,z] = pol2cart(TH,R,Z);
