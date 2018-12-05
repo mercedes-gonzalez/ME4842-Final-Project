@@ -1,70 +1,55 @@
-function [ref, exp] = Processing(ref, exp)
-%% Find frequency response of each run 
-% % Define Fourier Parameters
-% L = length(ref(1).adjusted.data(:,1));
-% Fs = 150000;
-% 
-% % Do the thing
-% for run = 1:4
-%     fourierRef = fft(ref(run).adjusted(1).data(:,2));
-%     P2 = abs(fourierRef/L);
-%     P1 = P2(1:L/2+1);
-%     P1(2:end-1) = 2*P1(2:end-1);
-%     f = Fs*(0:(L/2))/L;
-%     ref(run).RMSvoltage(:) = P1;
-%     ref(run).freq(:) = f;
-%     plot(f,P1);
-%     hold on;
-%     for angle = 2:38
-%         fourierExp = fft(exp(run).adjusted(angle).data(:,2));
-%         P2 = abs(fourierExp/L);
-%         P1 = P2(1:L/2+1);
-%         P1(2:end-1) = 2*P1(2:end-1);
-%         f = Fs*(0:(L/2))/L;
-%         exp(run).RMSvoltage(:) = P1;
-%         exp(run).freq(:) = f;
-%         plot(f,P1);
-%         hold on;
-%     end
-% end
-% 
-% title('Single-Sided Amplitude Spectrum of S(t)')
-% xlabel('f (Hz)')
-% ylabel('|P1(f)|')
+% function [ref, exp] = Processing(ref, exp)
+% %% Spectrogram Method
 
+for angle = 1:38
+    % Generate spectrogram data, find location of maximum power
+    for run = 1:4
+        [s,f,t,p] = spectrogram(exp(run).savedData(:,2,angle),tukeywin(512,0.1),60,512,150000);
+        [q,nd] = max(10*log10(p));
+        fmax = f(nd);
+        L = 1500;
+        % Grab two data points to generate line of best fit
+        x1 = t(60);
+        y1 = fmax(60);
+        
+        x2 = t(170);
+        y2 = fmax(170);
+    
+        % Calculate line of best fit
+        xreg = [ x1 x2 ];
+        yreg = [ y1 y2 ];
+        C = polyfit(xreg,yreg,1);
+        timeReg = linspace(0,1.6,L);
+        freqReg = polyval(C,timeReg);
+        
+        % Interpolate the power along the line of best fit
+        f = f';
+        p = p';
+        [timeGrid,frequencyGrid] = ndgrid(t,f);
 
-%% Spectrogram Method
-for i = 2:38
-    % spectrogram(data, 
-    [s,f,t,p] = spectrogram(exp(1).savedData(:,2,1),tukeywin(256,0.1),60,256,150000);
-    [q,nd] = max(10*log10(p));
-    plot3(t,f(nd),p);
-    xlabel('time')
-    ylabel('frequency')
-    zlabel('power')
-%     hold on
-end
-plot3(t,f(nd),p);
-hold on
-ylim([500 15000]);
-
-fr = f(nd)
-x1 = t(60);
-y1 = fr(60);
-x2 = t(170);
-y2 = fr(170);
-
-xreg = [ x1 x2 ];
-yreg = [ y1 y2 ];
-C = polyfit(xreg,yreg,1);
-timeReg = linspace(0,1.6,1000);
-freqReg = polyval(C,timeReg);
-plot(timeReg,freqReg,'k','linewidth',4);
-f = f';
-[timeGrid,frequencyGrid] = ndgrid(t,f);
-p = p';
-pInterp = griddedInterpolant(timeGrid,frequencyGrid,p);
-powerReg = pInterp(timeReg,freqReg);
-plot3(timeReg,freqReg,powerReg,'k','linewidth',4);
-
+        pInterp = griddedInterpolant(timeGrid,frequencyGrid,p);
+        powerReg = pInterp(timeReg,freqReg);
+        powerReg = 10*log10(powerReg);
+        
+        % Smooooooothhhhhhhh
+        psmooth = smooth(freqReg,powerReg,55);
+        
+        % Plot 
+        subplot(4,1,run);
+        plot3(timeReg,freqReg,psmooth,'linewidth',4,'color','k');
+        hold on; view(90,0);
+        plot3(timeReg,freqReg,powerReg);
+        ylim([500 15000]);
+        
+        xlabel('time');
+        ylabel('frequency');
+        zlabel('power');
+        legend({'Smoothed Data','Raw Data'},'Location','southwest');
+        set(gca,'Yscale','log'); 
+        grid on;
+        hold off;
+        
+        pause(.5)
+        
+    end
 end
