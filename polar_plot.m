@@ -34,13 +34,12 @@ for run = 4:-1:1
         fdesired = fdesired + 250;
         hold off;
         fdesired
-        pause
+        pause(.1)
 
         % Store it in workspace
         polar(run).data(f).theta = totalTheta;
         polar(run).data(f).amplitude = totalAmplitude;
     end
-
 end
 
 
