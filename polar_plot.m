@@ -1,48 +1,51 @@
 %% GENERATE COOL AF POLAR PLOTS
 warning('off','all')
-pause on;
-for run = 4:-1:1
-    inputTheta = exp(run).inputTheta;
-    inputTheta(39) = pi;
-%     inputTheta(1:2) = [];
 
+% for run = 4:-1:1
+    inputTheta = exp(run).inputTheta;
+    inputTheta(end+1) = pi;
+    inputTheta(1:2) = [];
+    inputTheta = abs(inputTheta);
+    run = 1;
     fdesired = 500;    
-    for f = 56:-1:1
+    for f = 59:-1:1
         % Create amplitude array of 36 angles
         for angle = 38:-1:1
-            amplitude(angle) = interp1(exp(angle).freq(angle).reg,exp(run).power(angle).reg,fdesired);
+            amplitude(angle) = interp1(exp(run).freq(angle).reg,exp(run).power(angle).reg,fdesired);
         end
-        amplitude(39) = .5*(amplitude(end-1)+amplitude(end));
-%         amplitude(1:2) = [];
+        amplitude(end+1) = .5*(amplitude(end-1)+amplitude(end));
+        amplitude(1:2) = [];
 
+        
         % Create full 360 degree array for theta
-        rTheta = abs(fliplr(inputTheta));
-        totalTheta = horzcat(rTheta,inputTheta);
+        rTheta = pi + inputTheta;
+        totalTheta = horzcat(inputTheta, rTheta);
 
         % Create full 360 degree array for amplitude
         rAmplitude = fliplr(amplitude);
-        totalAmplitude = horzcat(rAmplitude,amplitude);
+        totalAmplitude = horzcat(amplitude,rAmplitude);
 
         % Smoooothhhhhh
-        asmooth = smooth(totalTheta,totalAmplitude,11);
+        asmooth = smooth(totalTheta,totalAmplitude,9);
 
         % Plot
-        polarplot(totalTheta,totalAmplitude,'-o');
+        polarplot(totalTheta,totalAmplitude);
         hold on;
-        polarplot(totalTheta,asmooth,'r-o');
+        polarplot(totalTheta,asmooth,'linewidth',3);
+        hold on;
+%         polarplot(totalTheta,asmooth);
         title(fdesired);
-        legend('og data','smoothed');
-        rlim([-100 0]);
+        rlim([-60 5]); 
         fdesired = fdesired + 250;
-        hold off;
+        pause(.1);
+        shg;
         
-        pause;
-
+        hold off;
         % Store it in workspace
         polar(run).data(f).theta = totalTheta;
         polar(run).data(f).amplitude = totalAmplitude;
+        polar(run).data(f).asmooth = asmooth;
     end
-end
-
+% end
 
 
